@@ -16,7 +16,7 @@ use yii\base\InvalidConfigException;
  * <li>$screenName: account Twitter autore dei tweets</li>
  * </ul>
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
- * @version 1.0
+ * @version 1.0.1
  */
 class Twitter extends \yii\base\Component {
 
