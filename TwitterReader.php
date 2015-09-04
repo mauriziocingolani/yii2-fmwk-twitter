@@ -7,6 +7,7 @@ use Yii;
 /**
  * Tramite questo oggetto è possibile iterare sulla lista dei tweets.
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
  * @version 1.0.1
  */
 class TwitterReader extends \yii\base\Object implements \Iterator {
