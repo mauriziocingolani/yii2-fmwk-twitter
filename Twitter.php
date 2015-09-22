@@ -18,7 +18,7 @@ use yii\base\InvalidConfigException;
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.0.1
+ * @version 1.0.2
  */
 class Twitter extends \yii\base\Component {
 
@@ -50,7 +50,7 @@ class Twitter extends \yii\base\Component {
      * @return \mauriziocingolani\yii2fmwktwitter\TwitterReader Lista dei tweet
      */
     public function tweets($limit = null) {
-        return new TwitterReader($this->screenName, $limit);
+        return new TwitterReader($limit);
     }
 
 }
