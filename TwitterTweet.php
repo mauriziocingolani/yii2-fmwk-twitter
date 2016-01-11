@@ -10,9 +10,12 @@ use mauriziocingolani\yii2fmwkphp\Html;
  * @property text $text
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.0.1
+ * @version 1.0.2
  */
 class TwitterTweet extends \yii\base\Object {
+
+    /** ID del tweet */
+    private $_id_str;
 
     /** Data e ora di creazione */
     private $_created;
@@ -31,10 +34,19 @@ class TwitterTweet extends \yii\base\Object {
      * @param mixed $data Oggetto con i dati del tweet
      */
     public function __construct($data) {
+        $this->_id_str = strtotime($data->id_str);
         $this->_created = strtotime($data->created_at);
         $this->_text = $data->text;
         $this->_hashtags = $data->entities->hashtags;
         $this->_urls = $data->entities->urls;
+    }
+
+    /**
+     * Restituisce l'ID del tweet.
+     * @return string ID del tweet
+     */
+    public function getIdStr() {
+        return $this->_id_str;
     }
 
     /**
