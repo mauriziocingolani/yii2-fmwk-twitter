@@ -9,7 +9,7 @@
 <div class="tweet">
     <header>
         <i class="fa fa-twitter"></i>
-        <span><?= date('d-m-Y', strtotime($tweet->created)); ?></span>
+        <span title="<?= $tweet->idStr; ?>"><?= date('d-m-Y', strtotime($tweet->created)); ?></span>
     </header>
     <p><?= $tweet->text; ?></p>
 </div>  
