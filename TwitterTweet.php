@@ -8,9 +8,10 @@ use mauriziocingolani\yii2fmwkphp\Html;
 /**
  * Rappresenta un tweet con le sue proprietà.
  * @property text $text
+ * @property text $idStr
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.0.2
+ * @version 1.0.3
  */
 class TwitterTweet extends \yii\base\Object {
 
@@ -34,7 +35,7 @@ class TwitterTweet extends \yii\base\Object {
      * @param mixed $data Oggetto con i dati del tweet
      */
     public function __construct($data) {
-        $this->_id_str = strtotime($data->id_str);
+        $this->_id_str = $data->id_str;
         $this->_created = strtotime($data->created_at);
         $this->_text = $data->text;
         $this->_hashtags = $data->entities->hashtags;
