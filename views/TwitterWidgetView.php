@@ -1,5 +1,10 @@
 <?php
 /* @var $tweet mauriziocingolani\yii2fmwktwitter\TwitterTweet */
+/**
+ * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
+ * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
+ * @version 1.1
+ */
 ?>
 
 <!-- 
@@ -9,7 +14,7 @@
 <div class="tweet">
     <header>
         <i class="fa fa-twitter"></i>
-        <span title="<?= $tweet->idStr; ?>"><?= date('d-m-Y', strtotime($tweet->created)); ?></span>
+        <span><?= date('d-m-Y', strtotime($tweet->created)); ?></span>
     </header>
     <p><?= $tweet->text; ?></p>
 </div>  

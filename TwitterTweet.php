@@ -3,75 +3,59 @@
 namespace mauriziocingolani\yii2fmwktwitter;
 
 use Yii;
+use yii\db\ActiveRecord;
 use mauriziocingolani\yii2fmwkphp\Html;
 
 /**
- * Rappresenta un tweet con le sue proprietà.
- * @property text $text
- * @property text $idStr
+ * Rappresenta un tweet contenuto nella tabella YiiTweets.
+ * 
+ * @property integer $id Chiave primaria
+ * @property string $id_str ID del tweet
+ * @property string $created Date e ora di creazione
+ * @property string $text Testo del tweet
+ * 
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.0.3
+ * @version 1.1
  */
-class TwitterTweet extends \yii\base\Object {
+class TwitterTweet extends ActiveRecord {
 
-    /** ID del tweet */
-    private $_id_str;
-
-    /** Data e ora di creazione */
-    private $_created;
-
-    /** Testo del tweet */
-    private $_text;
-
-    /** Lista degli hashtag contenuti nel tweet */
-    private $_hashtags;
-
-    /** Lista dei link contenuti nel tweet */
-    private $_urls;
-
-    /**
-     * Estrae dall'oggetto restituito dal metodo user_timeline dell'API di Twitter i dati del tweet (testo, hastags, ...).
-     * @param mixed $data Oggetto con i dati del tweet
-     */
-    public function __construct($data) {
-        $this->_id_str = $data->id_str;
-        $this->_created = strtotime($data->created_at);
-        $this->_text = $data->text;
-        $this->_hashtags = $data->entities->hashtags;
-        $this->_urls = $data->entities->urls;
+    public static function tableName() {
+        return 'YiiTweets';
     }
 
-    /**
-     * Restituisce l'ID del tweet.
-     * @return string ID del tweet
-     */
-    public function getIdStr() {
-        return $this->_id_str;
-    }
+    /* Relazioni */
+    /* Eventi */
+    /* Metodi */
+    /* Getters-Setters */
+    /* Metodi statici */
 
     /**
-     * Restituisce il testo del tweet applicando i tag html agli hashtags (tag <span> con classe .hashtag) e
-     * ai link (tag <a>).
-     * @return string Testo del tweet
+     * Partendo dall'oggetto che la Api Twitter restituisce per ogni tweet, verifica in base alla proprietà <code>id_str</code>
+     * se il tweet è già presente nel database. In caso affermativo restituisce true, altrimenti inserisce in nuovo record
+     * nel database e lo restituisce.
+     * @param mixed $data Oggetto del tweet restituito dalla Api Twitter
+     * @return mixed True se il tweet è già presente nel database, altrimenti nuovo record creato
      */
-    public function getText() {
-        $text = trim(str_replace('#' . Yii::$app->twitter->hashtag, '<span class="hashtag">#' . Yii::$app->twitter->hashtag . '</span>', $this->_text));
-        if (is_array($this->_urls)) :
-            foreach ($this->_urls as $url) :
-                $text = str_replace($url->url, Html::a($url->display_url, $url->expanded_url, array('target' => 'blank')), $text);
-            endforeach;
+    public static function CreateFromObj($data) {
+        $tweet = self::find()->where('id_str=:idstr', [':idstr' => $data->id_str])->one();
+        if (!$tweet) : # Nuovo tweet: lo inserisco nel database
+            $tweet = new TwitterTweet;
+            $tweet->id_str = $data->id_str;
+            $tweet->created = date('Y-m-d H:i:s', strtotime($data->created_at));
+            $text = trim(str_replace('#' . Yii::$app->twitter->hashtag, '<span class="hashtag">#' . Yii::$app->twitter->hashtag . '</span>', $data->text));
+            $urls = $data->entities->urls;
+            if (is_array($urls)) :
+                foreach ($urls as $url) :
+                    $text = str_replace($url->url, Html::a($url->display_url, $url->expanded_url, array('target' => 'blank')), $text);
+                endforeach;
+            endif;
+            $tweet->text = $text;
+            $tweet->save();
+            $tweet->refresh();
+            return $tweet;
         endif;
-        return $text;
-    }
-
-    /**
-     * Restituisce la data di creazione del tweet, secondo il formato passato come parametro.
-     * @param string $format Formato della data ('d-m-Y' di default)
-     * @return string Data di creazione delll tweet
-     */
-    public function getCreated($format = 'd-m-Y') {
-        return date($format, $this->_created);
+        return true;
     }
 
 }
