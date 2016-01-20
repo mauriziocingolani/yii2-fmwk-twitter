@@ -8,7 +8,7 @@ use Yii;
  * Tramite questo oggetto è possibile iterare sulla lista dei tweets.
  * @author Maurizio Cingolani <mauriziocingolani74@gmail.com>
  * @license http://opensource.org/licenses/BSD-3-Clause BSD-3-Clause
- * @version 1.1
+ * @version 1.1.1
  */
 class TwitterReader extends \yii\base\Object implements \Iterator {
 
@@ -35,21 +35,23 @@ class TwitterReader extends \yii\base\Object implements \Iterator {
         $tweets = json_decode($this->setGetfield($getfield)
                         ->buildOauth($url, $requestMethod)
                         ->performRequest());
-        if (isset($limit) && (int) $limit > 0) :
-            $limit = (int) $limit;
-        else :
-            $limit = 3200;
-        endif;
-        # Scorro tutti i tweets e controllo se sono già presenti nel database.
-        foreach ($tweets as $tw) :
-            foreach ($tw->entities->hashtags as $ht) :
-                if ($ht->text === Yii::$app->twitter->hashtag) :
-                    $tweet = TwitterTweet::CreateFromObj($tw);
-                    if ($tweet === true)
-                        break 2;# trovato tweet già presente nel db: inutile continuare!
-                endif;
+        if (!isset($tweets->errors)) :
+            if (isset($limit) && (int) $limit > 0) :
+                $limit = (int) $limit;
+            else :
+                $limit = 3200;
+            endif;
+            # Scorro tutti i tweets e controllo se sono già presenti nel database.
+            foreach ($tweets as $tw) :
+                foreach ($tw->entities->hashtags as $ht) :
+                    if ($ht->text === Yii::$app->twitter->hashtag) :
+                        $tweet = TwitterTweet::CreateFromObj($tw);
+                        if ($tweet === true)
+                            break 2;# trovato tweet già presente nel db: inutile continuare!
+                    endif;
+                endforeach;
             endforeach;
-        endforeach;
+        endif;
         # Restituisco la lista dei tweets (tutti o gli ultimi se impostato il $limit)
         $query = TwitterTweet::find()->orderBy(['created' => SORT_DESC]);
         if ($limit)
